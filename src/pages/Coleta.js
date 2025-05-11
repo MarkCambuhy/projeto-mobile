@@ -1,0 +1,95 @@
+//Importação
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { useState } from "react";
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Button, PaperProvider, MD3LightTheme as DefaultTheme } from "react-native-paper";
+
+//Tema personalizado
+const theme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#2D1A81',
+    secondary: '#FFFFFF'
+  }
+}
+
+//Definição
+const Coleta = (props) => {
+
+  const [resposta, setResposta] = useState('');
+
+  const opcoes = [
+    { label: 'Péssimo', icon: 'emoticon-dead-outline', cor: '#FF0000' },
+    { label: 'Ruim', icon: 'emoticon-sad-outline', cor: '#FF4500' },
+    { label: 'Neutro', icon: 'emoticon-neutral-outline', cor: '#FFD700' },
+    { label: 'Bom', icon: 'emoticon-happy-outline', cor: '#32CD32' },
+    { label: 'Excelente', icon: 'emoticon-excited-outline', cor: '#00FF00' },
+  ];
+
+
+  return (
+    <PaperProvider theme={theme}>
+      <View style={estilos.container}>
+        <Text style={estilos.titulo}>O que você achou do Carnaval 2024?</Text>
+
+        <View style={estilos.opcoes}>
+          {opcoes.map((item, index) => (
+            <TouchableOpacity
+              key={index}
+              style={estilos.botao}
+              onPress={() => setResposta(item.label)}
+            >
+              <Icon name={item.icon} size={40} color={item.cor} />
+              <Text style={estilos.legenda}>{item.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <Text style={estilos.resposta}>{resposta ? `Você respondeu: ${resposta}` : ''}</Text>
+      </View>
+    </PaperProvider>
+  );
+}
+
+//Estilos
+const estilos = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#2D1A81',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20
+  },
+  titulo: {
+    fontSize: 22,
+    color: 'white',
+    textAlign: 'center',
+    marginBottom: 30
+  },
+  opcoes: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    flexWrap: 'wrap',
+    width:'100%'
+    
+  },
+  botao: {
+    alignItems: 'center',
+    margin: 10
+    
+  },
+  legenda: {
+    color: 'white',
+    marginTop: 5,
+    fontSize: 14
+  },
+  resposta: {
+    color: '#FFD700',
+    fontSize: 18,
+    marginTop: 40
+  }
+})
+
+//Exportação
+export default Coleta;
