@@ -17,7 +17,7 @@ const InputItem = props => {
 const styles = StyleSheet.create({
   label: {
     color: '#fff',
-    fontSize: 28,
+    fontSize: 15,
     fontFamily: 'AveriaLibre-Regular',
   },
   input: {
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   msnError: {
     color: '#FD7979',
     fontWeight: '400',
-    fontSize: 18,
+    fontSize: 11,
     fontFamily: 'AveriaLibre-Regular',
   },
 });

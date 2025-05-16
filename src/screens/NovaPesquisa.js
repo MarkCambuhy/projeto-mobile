@@ -2,6 +2,7 @@ import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {useState} from 'react';
 import InputItem from '../components/InputItem';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import Botao from '../components/Botoes';
 
 const NovaPesquisa = props => {
   const [nomePesquisa, setNomePesquisa] = useState('');
@@ -13,7 +14,7 @@ const NovaPesquisa = props => {
   const cadastrar = () => {
     let erro = false;
     if (nomePesquisa == '') {
-      setErroNome('Preencha no nome da pesquisa');
+      setErroNome('Preencha o nome da pesquisa');
       erro = true;
     } else {
       setErroNome('');
@@ -24,7 +25,7 @@ const NovaPesquisa = props => {
     } else {
       setErroData('');
     }
-    if (!erro) props.navigation.navigate('Recuperação de senha');
+    if (!erro) props.navigation.navigate('Drawer');
   };
 
   return (
@@ -39,7 +40,7 @@ const NovaPesquisa = props => {
         <Icon
           style={styles.icone}
           name="calendar-month"
-          size={35}
+          size={25}
           color="#000"
         />
         <InputItem
@@ -55,9 +56,9 @@ const NovaPesquisa = props => {
         <Text style={styles.inputPhotoText}>Câmera/Galeria de imagens</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={cadastrar}>
-        <Text style={styles.buttonText}>CADASTRAR</Text>
-      </TouchableOpacity>
+      <View style={styles.cBotao}>
+        <Botao texto='CADASTRAR' funcao={cadastrar}/>
+      </View>
     </View>
   );
 };
@@ -69,24 +70,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 10,
   },
-  container: {},
-  button: {
-    backgroundColor: '#37BD6D',
-    padding: 8,
-    marginTop: 45,
+  cBotao: {
+    flex:0.5,
+    flexDirection:'column',
   },
   label: {
     color: '#fff',
-    fontSize: 28,
+    fontSize: 15,
     fontFamily: 'AveriaLibre-Regular',
   },
-  buttonText: {
-    fontWeight: '400',
-    fontSize: 28,
-    color: '#fff',
-    textAlign: 'center',
-    fontFamily: 'AveriaLibre-Regular',
-  },
+
   inputPhoto: {
     maxHeight: 94,
     height: '100%',
@@ -97,7 +90,7 @@ const styles = StyleSheet.create({
   },
   inputPhotoText: {
     color: '#939393',
-    fontSize: 20,
+    fontSize: 15,
     fontFamily: 'AveriaLibre-Regular',
   },
   icone: {
