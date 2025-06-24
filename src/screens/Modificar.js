@@ -1,9 +1,10 @@
 // Importações
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal, Image, Alert } from "react-native";
 import { useState } from "react";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { PaperProvider, MD3LightTheme as DefaultTheme } from "react-native-paper";
 import Botao from "../components/Botoes";
+import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 
 // Tema personalizado
 const theme = {
@@ -15,20 +16,48 @@ const theme = {
   }
 };
 
-// Definição
 const ModificarPesquisa = (props) => {
   const [nome, setNome] = useState('');
   const [data, setData] = useState('');
+  const [imagem, setImagem] = useState(null);
   const [mostrarModal, setMostrarModal] = useState(false);
-//Navegacao
+
+  // Abre opções: câmera ou galeria
+  const escolherImagem = () => {
+    Alert.alert('Selecionar imagem', 'Escolha a fonte da imagem:', [
+      {
+        text: 'Câmera',
+        onPress: () => {
+          launchCamera({ mediaType: 'photo', quality: 1 }, response => {
+            if (!response.didCancel && !response.errorCode) {
+              setImagem(response.assets[0].uri);
+            }
+          });
+        },
+      },
+      {
+        text: 'Galeria',
+        onPress: () => {
+          launchImageLibrary({ mediaType: 'photo', quality: 1 }, response => {
+            if (!response.didCancel && !response.errorCode) {
+              setImagem(response.assets[0].uri);
+            }
+          });
+        },
+      },
+      {
+        text: 'Cancelar',
+        style: 'cancel',
+      },
+    ]);
+  };
 
   const irHome = () => {
     props.navigation.navigate('Drawer');
-    
   };
 
   const apagar = () => {
-    setMostrarModal(true); 
+    setMostrarModal(true);
   };
 
   const cancelarApagar = () => {
@@ -38,12 +67,10 @@ const ModificarPesquisa = (props) => {
   return (
     <PaperProvider theme={theme}>
       <ScrollView contentContainerStyle={estilos.container} keyboardShouldPersistTaps="handled">
-
         <Text style={estilos.label}>Nome</Text>
         <TextInput
           style={estilos.input}
           value={nome}
-          color={'#3F92C5'}
           placeholder="Carnaval 2024"
           onChangeText={setNome}
         />
@@ -53,7 +80,6 @@ const ModificarPesquisa = (props) => {
           <TextInput
             style={[estilos.input, { flex: 1 }]}
             value={data}
-            color={'#3F92C5'}
             placeholder="16/02/2024"
             onChangeText={setData}
           />
@@ -61,14 +87,17 @@ const ModificarPesquisa = (props) => {
         </View>
 
         <Text style={estilos.label}>Imagem</Text>
-        <View style={estilos.caixaImagem}>
-          <Icon name="party-popper" size={50} color="#D400FF" />
-        </View>
+        <TouchableOpacity onPress={escolherImagem} style={estilos.caixaImagem}>
+          {imagem ? (
+            <Image source={{ uri: imagem }} style={{ width: 100, height: 100, borderRadius: 10 }} />
+          ) : (
+            <Icon name="camera-plus" size={50} color="#D400FF" />
+          )}
+        </TouchableOpacity>
 
         <View style={estilos.cBotao}>
-          <Botao texto={'SALVAR'} funcao={irHome}/>
+          <Botao texto={'SALVAR'} funcao={irHome} />
         </View>
-
 
         <TouchableOpacity style={estilos.apagar} onPress={apagar}>
           <Icon name="trash-can-outline" size={28} color="#FFFFFF" />
@@ -101,22 +130,17 @@ const ModificarPesquisa = (props) => {
   );
 };
 
-// Estilos
 const estilos = StyleSheet.create({
   container: {
-    flex:1,
+    flex: 1,
     backgroundColor: '#372775',
     padding: 20
   },
-  voltar: {
-    marginBottom: 10
-  },
-
   label: {
     fontSize: 15,
     color: '#FFFFFF',
     marginTop: 10,
-    fontFamily:'AveriaLibre-Regular'
+    fontFamily: 'AveriaLibre-Regular'
   },
   input: {
     fontSize: 15,
@@ -125,8 +149,7 @@ const estilos = StyleSheet.create({
     marginTop: 5,
     marginBottom: 10,
     borderRadius: 5,
-    fontFamily:'AveriaLibre-Regular',
-    
+    fontFamily: 'AveriaLibre-Regular'
   },
   inputComIcone: {
     flexDirection: 'row',
@@ -139,24 +162,14 @@ const estilos = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
-    height: 100,
+    height: 120,
     marginTop: 5,
-    marginBottom: 20
+    marginBottom: 20,
+    borderRadius: 10
   },
-  botaoSalvar: {
-    backgroundColor: '#00C851',
-    alignItems: 'center',
-    padding: 15,
-    borderRadius: 5,
-    marginTop: 10
-  },
-    cBotao:{
-    flex:1,
-    flexDirection:'column',
-  },
-  textoBotao: {
-    color: '#FFFFFF',
-    fontSize: 18
+  cBotao: {
+    flex: 1,
+    flexDirection: 'column',
   },
   apagar: {
     flexDirection: 'row',
@@ -168,7 +181,7 @@ const estilos = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 14,
     marginLeft: 5,
-    fontFamily:'AveriaLibre-Regular'
+    fontFamily: 'AveriaLibre-Regular'
   },
   modalFundo: {
     flex: 1,
@@ -188,7 +201,7 @@ const estilos = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     marginBottom: 20,
-    fontFamily:'AveriaLibre-Regular'
+    fontFamily: 'AveriaLibre-Regular'
   },
   modalBotoes: {
     flexDirection: 'row',
@@ -214,9 +227,8 @@ const estilos = StyleSheet.create({
   textoBotaoModal: {
     color: '#FFFFFF',
     fontSize: 14,
-    fontFamily:'AveriaLibre-Regular'
+    fontFamily: 'AveriaLibre-Regular'
   }
 });
 
-// Exportação
 export default ModificarPesquisa;
