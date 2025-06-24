@@ -1,31 +1,64 @@
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import {useState} from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Image } from 'react-native';
+import { useState } from 'react';
 import InputItem from '../components/InputItem';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Botao from '../components/Botoes';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 
 const NovaPesquisa = props => {
   const [nomePesquisa, setNomePesquisa] = useState('');
   const [data, setData] = useState('');
+  const [imagem, setImagem] = useState(null); 
 
   const [erroNome, setErroNome] = useState('');
   const [erroData, setErroData] = useState('');
 
+  const escolherImagem = () => {
+    Alert.alert('Selecionar imagem', 'Escolha a fonte da imagem:', [
+      {
+        text: 'Câmera',
+        onPress: () => {
+          launchCamera({ mediaType: 'photo', quality: 1 }, response => {
+            if (!response.didCancel && !response.errorCode) {
+              setImagem(response.assets[0].uri);
+            }
+          });
+        },
+      },
+      {
+        text: 'Galeria',
+        onPress: () => {
+          launchImageLibrary({ mediaType: 'photo', quality: 1 }, response => {
+            if (!response.didCancel && !response.errorCode) {
+              setImagem(response.assets[0].uri);
+            }
+          });
+        },
+      },
+      {
+        text: 'Cancelar',
+        style: 'cancel',
+      },
+    ]);
+  };
+
   const cadastrar = () => {
     let erro = false;
-    if (nomePesquisa == '') {
+    if (nomePesquisa === '') {
       setErroNome('Preencha o nome da pesquisa');
       erro = true;
     } else {
       setErroNome('');
     }
-    if (data == '') {
+    if (data === '') {
       setErroData('Preencha a data');
       erro = true;
     } else {
       setErroData('');
     }
-    if (!erro) props.navigation.navigate('Drawer');
+    if (!erro) {
+      props.navigation.navigate('Drawer');
+    }
   };
 
   return (
@@ -52,12 +85,16 @@ const NovaPesquisa = props => {
       </View>
       <Text style={styles.label}>Imagem</Text>
 
-      <TouchableOpacity style={styles.inputPhoto}>
-        <Text style={styles.inputPhotoText}>Câmera/Galeria de imagens</Text>
+      <TouchableOpacity style={styles.inputPhoto} onPress={escolherImagem}>
+        {imagem ? (
+          <Image source={{ uri: imagem }} style={styles.imagePreview} />
+        ) : (
+          <Text style={styles.inputPhotoText}>Câmera/Galeria de imagens</Text>
+        )}
       </TouchableOpacity>
 
       <View style={styles.cBotao}>
-        <Botao texto='CADASTRAR' funcao={cadastrar}/>
+        <Botao texto='CADASTRAR' funcao={cadastrar} />
       </View>
     </View>
   );
@@ -71,27 +108,34 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   cBotao: {
-    flex:0.5,
-    flexDirection:'column',
+    flex: 0.5,
+    flexDirection: 'column',
   },
   label: {
     color: '#fff',
     fontSize: 15,
     fontFamily: 'AveriaLibre-Regular',
   },
-
   inputPhoto: {
-    maxHeight: 94,
-    height: '100%',
+    maxHeight: 150,
+    height: 120,
     backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
     maxWidth: 335,
+    borderRadius: 10,
+    marginTop: 5,
+    marginBottom: 20,
   },
   inputPhotoText: {
     color: '#939393',
     fontSize: 15,
     fontFamily: 'AveriaLibre-Regular',
+  },
+  imagePreview: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
   },
   icone: {
     position: 'absolute',
