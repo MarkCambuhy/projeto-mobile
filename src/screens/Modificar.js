@@ -1,9 +1,15 @@
 // Importações
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal } from "react-native";
-import { useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal, Alert, Image } from "react-native";
+import { useEffect, useState } from "react";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { PaperProvider, MD3LightTheme as DefaultTheme } from "react-native-paper";
 import Botao from "../components/Botoes";
+import { launchCamera, launchImageLibrary } from "react-native-image-picker";
+
+
+import { addDoc, collection, doc, initializeFirestore, updateDoc, deleteDoc } from 'firebase/firestore';
+import app from '../config/firebase'
+
 
 // Tema personalizado
 const theme = {
@@ -19,9 +25,64 @@ const theme = {
 const ModificarPesquisa = (props) => {
   const [nome, setNome] = useState('');
   const [data, setData] = useState('');
+  const [imagem, setImagem] = useState(null);
   const [mostrarModal, setMostrarModal] = useState(false);
-//Navegacao
 
+  const id = props.route.params.id;
+  const nomeAlterar = props.route.params.nome;
+  const dataAlterar = props.route.params.data;
+  const imagemAlterar = props.route.params.imagem;
+
+  useEffect(()=>{
+    setNome(nomeAlterar);
+    setData(dataAlterar);
+  },[])
+
+  const db = initializeFirestore(app, {experimentalForceLongPolling: true});
+
+ 
+  
+  const salvar = () => {
+    const pesquisaRef = doc(db, "pesquisas", id);
+    updateDoc(pesquisaRef, {
+	    nome: nome,
+	    data: data,
+	    imagem: imagem
+    });
+    irHome();
+  }
+
+// Abre opções: câmera ou galeriaAdd commentMore actions
+  const escolherImagem = () => {
+    Alert.alert('Selecionar imagem', 'Escolha a fonte da imagem:', [
+      {
+        text: 'Câmera',
+        onPress: () => {
+          launchCamera({ mediaType: 'photo', quality: 1 }, response => {
+            if (!response.didCancel && !response.errorCode) {
+              setImagem(response.assets[0].uri);
+            }
+          });
+        },
+      },
+      {
+        text: 'Galeria',
+        onPress: () => {
+          launchImageLibrary({ mediaType: 'photo', quality: 1 }, response => {
+            if (!response.didCancel && !response.errorCode) {
+              setImagem(response.assets[0].uri);
+            }
+          });
+        },
+      },
+      {
+        text: 'Cancelar',
+        style: 'cancel',
+      },
+    ]);
+  };
+
+//Navegacao
   const irHome = () => {
     props.navigation.navigate('Drawer');
     
@@ -30,6 +91,11 @@ const ModificarPesquisa = (props) => {
   const apagar = () => {
     setMostrarModal(true); 
   };
+
+  const confirmarApagar = () => {
+    deleteDoc(doc(db, "pesquisas", id));
+    irHome();
+  }
 
   const cancelarApagar = () => {
     setMostrarModal(false);
@@ -61,12 +127,16 @@ const ModificarPesquisa = (props) => {
         </View>
 
         <Text style={estilos.label}>Imagem</Text>
-        <View style={estilos.caixaImagem}>
-          <Icon name="party-popper" size={50} color="#D400FF" />
-        </View>
+        <TouchableOpacity onPress={escolherImagem} style={estilos.caixaImagem}>
+          {imagem ? (
+            <Image source={{ uri: imagem }} style={{ width: 100, height: 100, borderRadius: 10 }} />
+          ) : (
+            <Icon name="camera-plus" size={50} color="#D400FF" />
+          )}
+        </TouchableOpacity>
 
         <View style={estilos.cBotao}>
-          <Botao texto={'SALVAR'} funcao={irHome}/>
+          <Botao texto={'SALVAR'} funcao={salvar}/>
         </View>
 
 
@@ -87,7 +157,7 @@ const ModificarPesquisa = (props) => {
           <View style={estilos.modalContainer}>
             <Text style={estilos.modalTexto}>Tem certeza de apagar essa pesquisa?</Text>
             <View style={estilos.modalBotoes}>
-              <TouchableOpacity style={estilos.botaoSim} onPress={irHome}>
+              <TouchableOpacity style={estilos.botaoSim} onPress={confirmarApagar}>
                 <Text style={estilos.textoBotaoModal}>SIM</Text>
               </TouchableOpacity>
               <TouchableOpacity style={estilos.botaoCancelar} onPress={cancelarApagar}>
