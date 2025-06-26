@@ -1,40 +1,88 @@
-import { View, TextInput, StyleSheet,TouchableOpacity} from 'react-native'
-import { useState } from 'react'
+import { View, TextInput, Text, StyleSheet,TouchableOpacity, Image} from 'react-native'
+import { useEffect, useState } from 'react'
 import Botao from '../components/Botoes'
 import Botaohome from '../components/Botaohome';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
+import { collection, initializeFirestore, onSnapshot, query } from 'firebase/firestore';
+import app from '../config/firebase';
+import { FlatList } from 'react-native-gesture-handler';
 
 
 const Home = (props) => {
   const [pesquisar, setPesquisar] = useState('')
+  const [listaPesquisas, setListaPesquisas] = useState('');
+  const [listaFiltrada, setListaFiltrada] = useState([]);
   
+  const db = initializeFirestore(app, {experimentalForceLongPolling: true});
+  const pesquisaCollection = collection(db, "pesquisas");
+
+  useEffect(() => {
+    const q = query(pesquisaCollection);
+
+    onSnapshot(q, (snapshot) => {
+      const pesquisas = [];
+      snapshot.forEach((doc) => {
+        pesquisas.push({
+          id: doc.id,
+          ...doc.data()
+        })
+      })
+
+      setListaPesquisas(pesquisas);
+      setListaFiltrada(pesquisas);
+    })
+  }, [])
+
+  useEffect(()=> {
+    realizarBusca();
+  }, [pesquisar]);
+
+  const realizarBusca = () => {
+  if (pesquisar.trim() === '') {
+    setListaFiltrada(listaPesquisas); 
+  } else {
+    const resultado = listaPesquisas.filter((item) =>
+      item.nome.toLowerCase().includes(pesquisar.toLowerCase())
+    );
+    setListaFiltrada(resultado);
+  }
+};
 
 //Navg
-    const irAcoesPesquisa = () => {
-        props.navigation.navigate('Carnaval')
+    const irAcoesPesquisa = (id, nome, data, imagem) => {
+        props.navigation.navigate('Carnaval', {id: id, nome: nome, data: data, imagem: imagem})
     }
 
     const irNovaPesquisa = () => {
       props.navigation.navigate('Nova Pesquisa')
     }
 
-  return (
+    return (
    
     <View style={estilos.view}>
 
       <View style={estilos.cInput}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={realizarBusca}>
                 <Icon name="search" size={36.5} color="gray" backgroundColor='white'/>
           </TouchableOpacity>
           <TextInput style={estilos.textInput} value={pesquisar} placeholder='Insira o termo de busca...' onChangeText={setPesquisar}/>
       </View>
 
-      <View style={estilos.buttonsContainer}>
-            <Botaohome nome={'devices'} cor='#704141' data='10/10/23' texto='SECOMP 2023' funcao={irAcoesPesquisa}/>
-            <Botaohome nome={'diversity-3'} cor='#000000' data='05/06/22' texto='UBUNTU 2022' funcao={irAcoesPesquisa}/>
-            <Botaohome nome={'woman'} cor='#D71616' data='01/04/2022' texto='MENINAS CPU' funcao={irAcoesPesquisa}/>
-      </View>
+      <FlatList
+  data={listaFiltrada}
+  renderItem={({ item }) => (
+    <Botaohome
+      imagem={item.imagem}
+      nome={item.nome}
+      data={item.data}
+      funcao={() => irAcoesPesquisa(item.id, item.nome, item.data, item.imagem)}
+    />
+  )}
+  keyExtractor={(pesquisa) => pesquisa.id}
+  horizontal={true}
+  style={estilos.buttonsContainer}
+/>
 
       <View style={estilos.cBotao}>
           <Botao texto = "NOVA PESQUISA" funcao={irNovaPesquisa}/>
@@ -81,6 +129,11 @@ const estilos = StyleSheet.create({
     margin:10
    
   },
+
+  textoo: {
+    flex: 10,
+    color: "red"
+  }
  
 })
 

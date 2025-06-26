@@ -1,13 +1,27 @@
-import React from "react";
+import {useLayoutEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
  const AcoesPesquisa = (props) => {
 
-//navigate
+  const id = props.route.params.id;
+  const nome = props.route.params.nome;
+  const data = props.route.params.data;
+  const imagem = props.route.params.imagem;
+  
+  console.log(id);
 
-  const irModificar = () => {
-    props.navigation.navigate('Modificar Pesquisa')
+// muda o nome do título
+useLayoutEffect(() => {
+    props.navigation.setOptions({
+      title: nome,
+    });
+  }, [props.navigation, nome]);
+
+
+
+  const irModificar = (id, nome, data, imagem) => {
+    props.navigation.navigate('Modificar Pesquisa', {id: id, nome: nome, data: data, imagem: imagem})
 
   }
 
@@ -22,9 +36,8 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
   return (
     <View style={styles.container}>
-
       <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.button} onPress={irModificar}>
+        <TouchableOpacity style={styles.button} onPress={() => irModificar(id, nome, data, imagem)}>
           <Icon name="file-document-edit-outline" size={60} color="#fff" />
           <Text style={styles.buttonText}>Modificar</Text>
         </TouchableOpacity>

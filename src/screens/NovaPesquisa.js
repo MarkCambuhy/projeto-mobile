@@ -1,17 +1,70 @@
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Alert, Image} from 'react-native';
 import {useState} from 'react';
 import InputItem from '../components/InputItem';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Botao from '../components/Botoes';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+
+import { addDoc, collection, initializeFirestore } from 'firebase/firestore';
+import app from '../config/firebase'
 
 const NovaPesquisa = props => {
   const [nomePesquisa, setNomePesquisa] = useState('');
   const [data, setData] = useState('');
+  const [imagem, setImagem] = useState(null); 
 
   const [erroNome, setErroNome] = useState('');
   const [erroData, setErroData] = useState('');
 
+  const db = initializeFirestore(app, {experimentalForceLongPolling: true});
+  const pesquisaCollection = collection(db, "pesquisas");
+
+  // Escolhe a imagem
+  const escolherImagem = () => {
+    Alert.alert('Selecionar imagem', 'Escolha a fonte da imagem:', [
+      {
+        text: 'Câmera',
+        onPress: () => {
+          launchCamera({ mediaType: 'photo', quality: 1 }, response => {
+            if (!response.didCancel && !response.errorCode) {
+              setImagem(response.assets[0].uri);
+            }
+          });
+        },
+      },
+      {
+        text: 'Galeria',
+        onPress: () => {
+          launchImageLibrary({ mediaType: 'photo', quality: 1 }, response => {
+            if (!response.didCancel && !response.errorCode) {
+              setImagem(response.assets[0].uri);
+            }
+          });
+        },
+      },
+      {
+        text: 'Cancelar',
+        style: 'cancel',
+      },
+    ]);
+  };
+
+  // Cadastra
   const cadastrar = () => {
+    if (!verificarCampos()) {
+      const docPesquisa = {
+        nome: nomePesquisa,
+        data: data,
+        imagem: imagem
+      }
+      addDoc(pesquisaCollection, docPesquisa)
+        .then((docRef) => {console.log("Documento inserido com sucesso: " + docRef.id)})
+        .catch((erro) => {console.log(erro)});
+      props.navigation.navigate('Drawer');
+    }
+  };
+
+  const verificarCampos = () => {
     let erro = false;
     if (nomePesquisa == '') {
       setErroNome('Preencha o nome da pesquisa');
@@ -25,7 +78,7 @@ const NovaPesquisa = props => {
     } else {
       setErroData('');
     }
-    if (!erro) props.navigation.navigate('Drawer');
+    return erro;
   };
 
   return (
@@ -52,12 +105,16 @@ const NovaPesquisa = props => {
       </View>
       <Text style={styles.label}>Imagem</Text>
 
-      <TouchableOpacity style={styles.inputPhoto}>
-        <Text style={styles.inputPhotoText}>Câmera/Galeria de imagens</Text>
+      <TouchableOpacity style={styles.inputPhoto} onPress={escolherImagem}>
+        {imagem ? (
+          <Image source={{ uri: imagem }} style={styles.imagePreview} />
+        ) : (
+          <Text style={styles.inputPhotoText}>Câmera/Galeria de imagens</Text>
+        )}
       </TouchableOpacity>
 
       <View style={styles.cBotao}>
-        <Botao texto='CADASTRAR' funcao={cadastrar}/>
+        <Botao texto="CADASTRAR" funcao={cadastrar} />
       </View>
     </View>
   );
@@ -71,8 +128,8 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   cBotao: {
-    flex:0.5,
-    flexDirection:'column',
+    flex: 0.5,
+    flexDirection: 'column',
   },
   label: {
     color: '#fff',
@@ -92,6 +149,11 @@ const styles = StyleSheet.create({
     color: '#939393',
     fontSize: 15,
     fontFamily: 'AveriaLibre-Regular',
+  },
+  imagePreview: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
   },
   icone: {
     position: 'absolute',
