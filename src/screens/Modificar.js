@@ -21,7 +21,6 @@ const theme = {
   }
 };
 
-// Definição
 const ModificarPesquisa = (props) => {
   const [nome, setNome] = useState('');
   const [data, setData] = useState('');
@@ -85,11 +84,10 @@ const ModificarPesquisa = (props) => {
 //Navegacao
   const irHome = () => {
     props.navigation.navigate('Drawer');
-    
   };
 
   const apagar = () => {
-    setMostrarModal(true); 
+    setMostrarModal(true);
   };
 
   const confirmarApagar = () => {
@@ -104,12 +102,10 @@ const ModificarPesquisa = (props) => {
   return (
     <PaperProvider theme={theme}>
       <ScrollView contentContainerStyle={estilos.container} keyboardShouldPersistTaps="handled">
-
         <Text style={estilos.label}>Nome</Text>
         <TextInput
           style={estilos.input}
           value={nome}
-          color={'#3F92C5'}
           placeholder="Carnaval 2024"
           onChangeText={setNome}
         />
@@ -119,7 +115,6 @@ const ModificarPesquisa = (props) => {
           <TextInput
             style={[estilos.input, { flex: 1 }]}
             value={data}
-            color={'#3F92C5'}
             placeholder="16/02/2024"
             onChangeText={setData}
           />
@@ -138,7 +133,6 @@ const ModificarPesquisa = (props) => {
         <View style={estilos.cBotao}>
           <Botao texto={'SALVAR'} funcao={salvar}/>
         </View>
-
 
         <TouchableOpacity style={estilos.apagar} onPress={apagar}>
           <Icon name="trash-can-outline" size={28} color="#FFFFFF" />
@@ -171,22 +165,17 @@ const ModificarPesquisa = (props) => {
   );
 };
 
-// Estilos
 const estilos = StyleSheet.create({
   container: {
-    flex:1,
+    flex: 1,
     backgroundColor: '#372775',
     padding: 20
   },
-  voltar: {
-    marginBottom: 10
-  },
-
   label: {
     fontSize: 15,
     color: '#FFFFFF',
     marginTop: 10,
-    fontFamily:'AveriaLibre-Regular'
+    fontFamily: 'AveriaLibre-Regular'
   },
   input: {
     fontSize: 15,
@@ -195,8 +184,7 @@ const estilos = StyleSheet.create({
     marginTop: 5,
     marginBottom: 10,
     borderRadius: 5,
-    fontFamily:'AveriaLibre-Regular',
-    
+    fontFamily: 'AveriaLibre-Regular'
   },
   inputComIcone: {
     flexDirection: 'row',
@@ -209,24 +197,14 @@ const estilos = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
-    height: 100,
+    height: 120,
     marginTop: 5,
-    marginBottom: 20
+    marginBottom: 20,
+    borderRadius: 10
   },
-  botaoSalvar: {
-    backgroundColor: '#00C851',
-    alignItems: 'center',
-    padding: 15,
-    borderRadius: 5,
-    marginTop: 10
-  },
-    cBotao:{
-    flex:1,
-    flexDirection:'column',
-  },
-  textoBotao: {
-    color: '#FFFFFF',
-    fontSize: 18
+  cBotao: {
+    flex: 1,
+    flexDirection: 'column',
   },
   apagar: {
     flexDirection: 'row',
@@ -238,7 +216,7 @@ const estilos = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 14,
     marginLeft: 5,
-    fontFamily:'AveriaLibre-Regular'
+    fontFamily: 'AveriaLibre-Regular'
   },
   modalFundo: {
     flex: 1,
@@ -258,7 +236,7 @@ const estilos = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     marginBottom: 20,
-    fontFamily:'AveriaLibre-Regular'
+    fontFamily: 'AveriaLibre-Regular'
   },
   modalBotoes: {
     flexDirection: 'row',
@@ -284,9 +262,8 @@ const estilos = StyleSheet.create({
   textoBotaoModal: {
     color: '#FFFFFF',
     fontSize: 14,
-    fontFamily:'AveriaLibre-Regular'
+    fontFamily: 'AveriaLibre-Regular'
   }
 });
 
-// Exportação
 export default ModificarPesquisa;

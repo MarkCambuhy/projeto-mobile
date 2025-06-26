@@ -66,13 +66,13 @@ const NovaPesquisa = props => {
 
   const verificarCampos = () => {
     let erro = false;
-    if (nomePesquisa == '') {
+    if (nomePesquisa === '') {
       setErroNome('Preencha o nome da pesquisa');
       erro = true;
     } else {
       setErroNome('');
     }
-    if (data == '') {
+    if (data === '') {
       setErroData('Preencha a data');
       erro = true;
     } else {
@@ -136,14 +136,16 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: 'AveriaLibre-Regular',
   },
-
   inputPhoto: {
-    maxHeight: 94,
-    height: '100%',
+    maxHeight: 150,
+    height: 120,
     backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
     maxWidth: 335,
+    borderRadius: 10,
+    marginTop: 5,
+    marginBottom: 20,
   },
   inputPhotoText: {
     color: '#939393',
