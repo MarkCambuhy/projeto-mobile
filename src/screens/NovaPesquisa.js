@@ -51,11 +51,19 @@ const NovaPesquisa = props => {
 
   // Cadastra
   const cadastrar = () => {
+    
     if (!verificarCampos()) {
       const docPesquisa = {
         nome: nomePesquisa,
         data: data,
-        imagem: imagem
+        imagem: imagem,
+        dados: {
+          pessimo: 0,
+          ruim: 0,
+          neutro: 0,
+          bom: 0,
+          excelente: 0
+        }
       }
       addDoc(pesquisaCollection, docPesquisa)
         .then((docRef) => {console.log("Documento inserido com sucesso: " + docRef.id)})

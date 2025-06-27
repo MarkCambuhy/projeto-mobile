@@ -30,8 +30,8 @@ const App = () => {
             color: '#fff',
           },
         }}>
-        <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name='Login' component={Login} options={{headerShown: false}}/>
+        <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name='Drawer' component={Drawer} options={{headerShown: false}}/>
         <Stack.Screen name="Nova Conta" component={NovaConta}/>
         <Stack.Screen name="Recuperar senha" component={RecuperarSenha} />
