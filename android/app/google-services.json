@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1043076304340",
+    "project_id": "mobile-as65d",
+    "storage_bucket": "mobile-as65d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1043076304340:android:281ae6eb85b5aceccbda41",
+        "android_client_info": {
+          "package_name": "com.mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSdQJO8hLwk4KqcgXOLtDHxlk_mobBJBk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
