@@ -26,12 +26,12 @@ useLayoutEffect(() => {
   }
 
   const irColeta = () => {
-    props.navigation.navigate('Coleta')
+    props.navigation.navigate('Coleta', {id: id, nome: nome});
 
   }
 
   const irRelatorio = () => {
-    props.navigation.navigate('Relatorio')
+    props.navigation.navigate('Relatorio', {id: id})
   }
 
   return (
