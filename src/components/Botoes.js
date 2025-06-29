@@ -26,7 +26,7 @@ const estilos = StyleSheet.create({
     texto:{
         color: '#ffffff',
         fontSize: 15,
-        fontFamily: 'Averia Libre',
+        fontFamily: 'AveriaLibre-Regular',
         textAlign: 'center'
 
     }

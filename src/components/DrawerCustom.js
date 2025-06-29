@@ -1,93 +1,81 @@
+import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { useState, useEffect } from 'react';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-
-import auth from '@react-native-firebase/auth';
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 const DrawerCustom = (props) => {
-    const [userEmail, setUserEmail] = useState('Carregando...');
-    useEffect(() => {
-        const subscriber = auth().onAuthStateChanged(user => {
-            if (user) {
-                setUserEmail(user.email);
-            }
-        });
-        return subscriber; 
-    }, []);
+  const irHome = () => {
+    props.navigation.navigate("Home");
+  };
 
+  const irLogin = () => {
+    props.navigation.navigate("Login");
+  };
 
-    const irHome = () => {
-        props.navigation.navigate('Home')
-    }
+  const email = props.email || "Usuário Desconhecido";
 
-    const handleLogout = () => {
-        auth()
-            .signOut()
-            .then(() => {
-                console.log('Utilizador deslogado!');
-            })
-            .catch(error => {
-                console.error("Erro ao fazer logout:", error);
-            });
-    }
+  return (
+    <View style={estilos.container}>
+      <View style={estilos.header}>
+        <Text style={estilos.email}>{email}</Text>
+        <View style={estilos.divisor} />
+      </View>
 
-    return (
-        <View>
-            <View style={estilos.header}>
-                <Text style={estilos.texto}>{userEmail}</Text>
-                <View style={estilos.divisor} />
-            </View>
+      <View style={estilos.botoes}>
+        <TouchableOpacity onPress={irHome}>
+          <View style={estilos.icones}>
+            <Icon name="description" size={24} color="#FFFFFF" />
+            <Text style={estilos.texto}>Pesquisas</Text>
+          </View>
+        </TouchableOpacity>
 
-            <View style={estilos.botao}>
-
-                <TouchableOpacity onPress={irHome}>
-                    <View style={estilos.icones}>
-                        <Icon name="description" size={24} color="#FFFFFF" />
-                        <Text style={estilos.texto}>Pesquisas</Text>
-                    </View>
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={handleLogout}>
-                    <View style={estilos.icones}>
-                        <Icon name="logout" size={24} color="#FFFFFF" />
-                        <Text style={estilos.texto}>Sair</Text>
-                    </View>
-                </TouchableOpacity>
-            </View>
-        </View>
-    )
-}
+        <TouchableOpacity onPress={irLogin}>
+          <View style={estilos.icones}>
+            <Icon name="logout" size={24} color="#FFFFFF" />
+            <Text style={estilos.texto}>Sair</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
 
 const estilos = StyleSheet.create({
-    header: {
-        backgroundColor: '#2B1D62',
-        padding: 30,
-        alignItems: 'center',
-        flexDirection: 'column'
-    },
-    texto: {
-        fontFamily: 'AveriaLibre-Regular',
-        fontSize: 20,
-        justifyContent: 'center',
-        color: '#ffffff',
-        marginLeft: 5
-    },
-    divisor: {
-        width: '100%',
-        borderBottomWidth: 1,
-        borderColor: '#ffffff',
-        marginTop: 30
-    },
-    botao: {
-        flexDirection: 'column',
-    },
-    icones: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 30,
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-    }
-})
+  container: {
+    flex: 1,
+    backgroundColor: "#2B1D62",
+  },
+  header: {
+    paddingTop: 50,
+    paddingHorizontal: 20,
+    paddingBottom: 30,
+    alignItems: "center",
+  },
+  email: {
+    fontFamily: "AveriaLibre-Regular",
+    fontSize: 18,
+    color: "#FFFFFF",
+  },
+  divisor: {
+    width: "100%",
+    borderBottomWidth: 0.5,
+    borderColor: "#ffffff",
+    marginTop: 30,
+  },
+  botoes: {
+    marginTop: 5,
+    paddingHorizontal: 20,
+  },
+  texto: {
+    fontFamily: "AveriaLibre-Regular",
+    fontSize: 20,
+    color: "#FFFFFF",
+    marginLeft: 10,
+  },
+  icones: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 30,
+  },
+});
 
 export default DrawerCustom;

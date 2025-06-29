@@ -8,7 +8,6 @@ export default function Agradecimento(props) {
       props.navigation.navigate('Drawer');
     }, 3000);}, [props]);
 
-
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="#372775" barStyle="light-content" />
