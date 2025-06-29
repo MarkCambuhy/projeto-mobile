@@ -1,78 +1,20 @@
-import {View, Text, StyleSheet, TouchableOpacity, Alert, Image} from 'react-native';
-import {useState} from 'react';
-import InputItem from '../components/InputItem';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import React from 'react';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import Botao from '../components/Botoes';
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import InputItem from '../components/InputItem';
+import { setNome, setData } from '../../redux/pesquisaSlice';
 
-import { addDoc, collection, initializeFirestore } from 'firebase/firestore';
-import app from '../config/firebase'
+const NovaPesquisa = (props) => {
+  const dispatch = useDispatch();
+  const nomePesquisa = useSelector((state) => state.pesquisa.nome);
+  const data = useSelector((state) => state.pesquisa.data);
 
-const NovaPesquisa = props => {
-  const [nomePesquisa, setNomePesquisa] = useState('');
-  const [data, setData] = useState('');
-  const [imagem, setImagem] = useState(null); 
+  const [erroNome, setErroNome] = React.useState('');
+  const [erroData, setErroData] = React.useState('');
 
-  const [erroNome, setErroNome] = useState('');
-  const [erroData, setErroData] = useState('');
-
-  const db = initializeFirestore(app, {experimentalForceLongPolling: true});
-  const pesquisaCollection = collection(db, "pesquisas");
-
-  // Escolhe a imagem
-  const escolherImagem = () => {
-    Alert.alert('Selecionar imagem', 'Escolha a fonte da imagem:', [
-      {
-        text: 'Câmera',
-        onPress: () => {
-          launchCamera({ mediaType: 'photo', quality: 1 }, response => {
-            if (!response.didCancel && !response.errorCode) {
-              setImagem(response.assets[0].uri);
-            }
-          });
-        },
-      },
-      {
-        text: 'Galeria',
-        onPress: () => {
-          launchImageLibrary({ mediaType: 'photo', quality: 1 }, response => {
-            if (!response.didCancel && !response.errorCode) {
-              setImagem(response.assets[0].uri);
-            }
-          });
-        },
-      },
-      {
-        text: 'Cancelar',
-        style: 'cancel',
-      },
-    ]);
-  };
-
-  // Cadastra
   const cadastrar = () => {
-    
-    if (!verificarCampos()) {
-      const docPesquisa = {
-        nome: nomePesquisa,
-        data: data,
-        imagem: imagem,
-        dados: {
-          pessimo: 0,
-          ruim: 0,
-          neutro: 0,
-          bom: 0,
-          excelente: 0
-        }
-      }
-      addDoc(pesquisaCollection, docPesquisa)
-        .then((docRef) => {console.log("Documento inserido com sucesso: " + docRef.id)})
-        .catch((erro) => {console.log(erro)});
-      props.navigation.navigate('Drawer');
-    }
-  };
-
-  const verificarCampos = () => {
     let erro = false;
     if (nomePesquisa === '') {
       setErroNome('Preencha o nome da pesquisa');
@@ -86,39 +28,20 @@ const NovaPesquisa = props => {
     } else {
       setErroData('');
     }
-    return erro;
+    if (!erro) props.navigation.navigate('Drawer');
   };
 
   return (
     <View style={styles.body}>
-      <InputItem
-        value={nomePesquisa}
-        label="Nome"
-        error={erroNome}
-        setValue={setNomePesquisa}
-      />
+      <InputItem value={nomePesquisa} label="Nome" error={erroNome} setValue={(text) => dispatch(setNome(text))} />
       <View>
-        <Icon
-          style={styles.icone}
-          name="calendar-month"
-          size={25}
-          color="#000"
-        />
-        <InputItem
-          value={data}
-          label="Data"
-          error={erroData}
-          setValue={setData}
-        />
+        <Icon style={styles.icone} name="calendar-month" size={25} color="#000" />
+        <InputItem value={data} label="Data" error={erroData} setValue={(text) => dispatch(setData(text))} />
       </View>
       <Text style={styles.label}>Imagem</Text>
 
-      <TouchableOpacity style={styles.inputPhoto} onPress={escolherImagem}>
-        {imagem ? (
-          <Image source={{ uri: imagem }} style={styles.imagePreview} />
-        ) : (
-          <Text style={styles.inputPhotoText}>Câmera/Galeria de imagens</Text>
-        )}
+      <TouchableOpacity style={styles.inputPhoto}>
+        <Text style={styles.inputPhotoText}>Câmera/Galeria de imagens</Text>
       </TouchableOpacity>
 
       <View style={styles.cBotao}>
@@ -144,26 +67,19 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: 'AveriaLibre-Regular',
   },
+
   inputPhoto: {
-    maxHeight: 150,
-    height: 120,
+    maxHeight: 94,
+    height: '100%',
     backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
     maxWidth: 335,
-    borderRadius: 10,
-    marginTop: 5,
-    marginBottom: 20,
   },
   inputPhotoText: {
     color: '#939393',
     fontSize: 15,
     fontFamily: 'AveriaLibre-Regular',
-  },
-  imagePreview: {
-    width: 100,
-    height: 100,
-    borderRadius: 8,
   },
   icone: {
     position: 'absolute',

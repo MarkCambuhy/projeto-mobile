@@ -1,79 +1,117 @@
-import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
-import { useState } from "react";
-import Botao from '../components/Botoes'; 
-
-import auth from '@react-native-firebase/auth';
+import React from 'react';
+import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { setEmail, setSenha, setError } from '../../redux/loginSlice';
+import Botao from '../components/Botoes';
+import { useState } from 'react';
 
 const NovaConta = (props) => {
-    const [email, setEmail] = useState('');
-    const [senha, setSenha] = useState('');
-    const [repetirSenha, setRepetirSenha] = useState('');
-    const [txtErro, setErro] = useState('');
+  const [txtEmail, setEmailLocal] = useState('');
+  const [txtSenha, setSenhaLocal] = useState('');
+  const [txtSenhab, setSenhabLocal] = useState('');
+  const [txtErro, setErroLocal] = useState('');
+  const dispatch = useDispatch();
 
-    const irParaLogin = () => {
-        props.navigation.goBack(); 
+  const registro = () => {
+    if (!txtEmail.includes('@')) {
+      setErroLocal('O e-mail deve conter um domínio válido');
+      setEmailLocal('');
+      return;
     }
-
-    const cadastrar = () => {
-        if (!email || !senha || !repetirSenha) {
-            setErro('Preencha todos os campos.');
-            return;
-        }
-
-        if (senha !== repetirSenha) {
-            setErro('As senhas não são iguais.');
-            return;
-        }
-
-        auth()
-            .createUserWithEmailAndPassword(email, senha)
-            .then(() => {
-                auth().signOut().then(() => {
-                    Alert.alert('Sucesso!', 'Sua conta foi criada. Faça o login para continuar.');
-                });
-            })
-            .catch(error => {
-                console.error("Erro no cadastro:", error.code);
-                if (error.code === 'auth/email-already-in-use') {
-                    setErro('Este e-mail já está em uso.');
-                } else if (error.code === 'auth/invalid-email') {
-                    setErro('O formato do e-mail é inválido.');
-                } else if (error.code === 'auth/weak-password') {
-                    setErro('A senha é muito fraca. Tente uma senha com pelo menos 6 caracteres.');
-                } else {
-                    setErro('Ocorreu um erro ao criar a conta.');
-                }
-            });
+    if (txtSenha !== txtSenhab) {
+      setErroLocal('O campo repetir senha difere da senha');
+      setSenhaLocal('');
+      setSenhabLocal('');
+      return;
     }
+    setErroLocal('');
+    dispatch(setEmail(txtEmail));
+    dispatch(setSenha(txtSenha));
+    props.navigation.navigate('Login');
+  };
 
-    return (
-        <View style={estilos.view}>
-            <View style={estilos.cInput}>
-                <Text style={estilos.texto}>E-mail</Text>
-                <TextInput style={estilos.textInput} value={email} onChangeText={setEmail} keyboardType="email-address" />
-                
-                <Text style={estilos.texto}>Senha</Text>
-                <TextInput style={estilos.textInput} value={senha} onChangeText={setSenha} secureTextEntry />
+  return (
+    <View style={estilos.view}>
+      <View style={estilos.cInput}>
+        <Text style={estilos.texto}>E-mail</Text>
+        <TextInput
+          style={estilos.textInput}
+          value={txtEmail}
+          onChangeText={setEmailLocal}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
 
-                <Text style={estilos.texto}>Repetir Senha</Text>
-                <TextInput style={estilos.textInput} value={repetirSenha} onChangeText={setRepetirSenha} secureTextEntry />
-                
-                {txtErro ? <Text style={estilos.textoErro}>{txtErro}</Text> : null}
-            </View>
-            <View style={estilos.cBotao}>
-                <Botao texto='Cadastrar' funcao={cadastrar} />
-            </View>
-        </View>
-    );
-}
+        <Text style={estilos.texto}>Senha</Text>
+        <TextInput
+          style={estilos.textInput}
+          value={txtSenha}
+          onChangeText={setSenhaLocal}
+          secureTextEntry
+        />
+
+        <Text style={estilos.texto}>Repetir senha</Text>
+        <TextInput
+          style={estilos.textInput}
+          value={txtSenhab}
+          onChangeText={setSenhabLocal}
+          secureTextEntry
+        />
+
+        {txtErro ? <Text style={estilos.textoErro}>{txtErro}</Text> : null}
+      </View>
+
+      <View style={estilos.cBotao}>
+        <Botao texto="CADASTRAR" funcao={registro} />
+      </View>
+    </View>
+  );
+};
 
 const estilos = StyleSheet.create({
-    view:{ flex:1, backgroundColor: '#372775', flexDirection: 'column', padding:1, justifyContent: 'center' },
-    texto: { fontSize: 15, fontFamily: 'AveriaLibre-Regular', color:'#ffffff', marginTop:10, marginLeft: 30 },
-    textInput: { fontSize: 15, fontFamily: 'AveriaLibre-Regular', color: '#3F92C5', backgroundColor: '#ffffff', marginHorizontal: 30 },
-    textoErro: { fontSize: 11, fontFamily: 'AveriaLibre-Regular', color: '#FD7979', textAlign: 'center', marginTop: 5 },
-    cInput:{ flex:0.4, justifyContent:'center' },
-    cBotao:{ flex:0.3 },
+  view: {
+    flex: 1,
+    backgroundColor: '#372775',
+    flexDirection: 'column',
+  },
+
+  texto: {
+    fontSize: 15,
+    fontFamily: 'AveriaLibre-Regular',
+    color: '#ffffff',
+    marginTop: 10,
+  },
+
+  textInput: {
+    fontSize: 15,
+    fontFamily: 'AveriaLibre-Regular',
+    color: '#3F92C5',
+    backgroundColor: '#ffffff',
+    height: 40,
+    paddingHorizontal: 8,
+    borderRadius: 5,
+    marginBottom: 10,
+  },
+
+  textoErro: {
+    fontSize: 11,
+    fontFamily: 'AveriaLibre-Regular',
+    color: '#FD7979',
+  },
+
+  cInput: {
+    flex: 0.75,
+    flexDirection: 'column',
+    padding: 30,
+    paddingTop: 60,
+    justifyContent: 'center',
+    alignContent: 'center',
+  },
+
+  cBotao: {
+    flex: 0.5,
+    flexDirection: 'column',
+  },
 });
 
 export default NovaConta;
