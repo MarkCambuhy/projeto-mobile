@@ -1,43 +1,33 @@
-import {useLayoutEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import {useLayoutEffect} from 'react';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {useSelector} from 'react-redux';
 
- const AcoesPesquisa = (props) => {
-
-  const id = props.route.params.id;
-  const nome = props.route.params.nome;
-  const data = props.route.params.data;
-  const imagem = props.route.params.imagem;
-  
-  console.log(id);
-
-// muda o nome do título
-useLayoutEffect(() => {
+const AcoesPesquisa = props => {
+  const nome = useSelector(state => state.pesquisa.nome);
+  // muda o nome do título
+  useLayoutEffect(() => {
     props.navigation.setOptions({
       title: nome,
     });
   }, [props.navigation, nome]);
 
-
-
-  const irModificar = (id, nome, data, imagem) => {
-    props.navigation.navigate('Modificar Pesquisa', {id: id, nome: nome, data: data, imagem: imagem})
-
-  }
+  const irModificar = () => {
+    props.navigation.navigate('Modificar Pesquisa');
+  };
 
   const irColeta = () => {
-    props.navigation.navigate('Coleta', {id: id, nome: nome});
-
-  }
+    props.navigation.navigate('Coleta');
+  };
 
   const irRelatorio = () => {
-    props.navigation.navigate('Relatorio', {id: id})
-  }
+    props.navigation.navigate('Relatorio');
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => irModificar(id, nome, data, imagem)}>
+        <TouchableOpacity style={styles.button} onPress={() => irModificar()}>
           <Icon name="file-document-edit-outline" size={60} color="#fff" />
           <Text style={styles.buttonText}>Modificar</Text>
         </TouchableOpacity>
@@ -52,48 +42,46 @@ useLayoutEffect(() => {
       </View>
     </View>
   );
-}
-
-
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#372775",
-    alignItems: "center",
+    backgroundColor: '#372775',
+    alignItems: 'center',
   },
 
   buttonsContainer: {
     flex: 0.2,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    width: "100%",
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    width: '100%',
     paddingHorizontal: 16,
-    marginTop: 80, 
+    marginTop: 80,
   },
   button: {
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#312464", 
-    borderRadius: 5, 
-    width: 150, 
-    height: 140, 
-    marginHorizontal: 8, 
-    shadowOffset: { width: 0, height: 2 },
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#312464',
+    borderRadius: 5,
+    width: 150,
+    height: 140,
+    marginHorizontal: 8,
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.25,
     shadowRadius: 3,
-    elevation: 5, 
+    elevation: 5,
   },
   buttonText: {
     marginTop: 8,
-    color: "#fff",
+    color: '#fff',
     fontSize: 14,
-    textAlign: "center",
-    fontWeight: "400", 
-    fontFamily: "AveriaLibre-Regular", 
-    lineHeight: 14, 
+    textAlign: 'center',
+    fontWeight: '400',
+    fontFamily: 'AveriaLibre-Regular',
+    lineHeight: 14,
   },
 });
 
-export default AcoesPesquisa
+export default AcoesPesquisa;

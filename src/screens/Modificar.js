@@ -1,15 +1,29 @@
 // Importações
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal, Alert, Image } from "react-native";
-import { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Modal,
+  Alert,
+  Image,
+} from 'react-native';
+import {useEffect, useState} from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { PaperProvider, MD3LightTheme as DefaultTheme } from "react-native-paper";
-import Botao from "../components/Botoes";
-import { launchCamera, launchImageLibrary } from "react-native-image-picker";
+import {PaperProvider, MD3LightTheme as DefaultTheme} from 'react-native-paper';
+import Botao from '../components/Botoes';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
-
-import { addDoc, collection, doc, initializeFirestore, updateDoc, deleteDoc } from 'firebase/firestore';
-import app from '../config/firebase'
-
+import {
+  doc,
+  initializeFirestore,
+  updateDoc,
+  deleteDoc,
+} from 'firebase/firestore';
+import app from '../config/firebase';
+import {useSelector} from 'react-redux';
 
 // Tema personalizado
 const theme = {
@@ -17,47 +31,45 @@ const theme = {
   colors: {
     ...DefaultTheme.colors,
     primary: '#372775',
-    secondary: '#FFFFFF'
-  }
+    secondary: '#FFFFFF',
+  },
 };
 
-const ModificarPesquisa = (props) => {
+const ModificarPesquisa = props => {
   const [nome, setNome] = useState('');
   const [data, setData] = useState('');
   const [imagem, setImagem] = useState(null);
   const [mostrarModal, setMostrarModal] = useState(false);
 
-  const id = props.route.params.id;
-  const nomeAlterar = props.route.params.nome;
-  const dataAlterar = props.route.params.data;
-  const imagemAlterar = props.route.params.imagem;
+  const id = useSelector(state => state.pesquisa.id);
+  const nomeAlterar = useSelector(state => state.pesquisa.nome);
+  const dataAlterar = useSelector(state => state.pesquisa.data);
+  const imagemAlterar = useSelector(state => state.pesquisa.imagem);
 
-  useEffect(()=>{
+  useEffect(() => {
     setNome(nomeAlterar);
     setData(dataAlterar);
-  },[])
+  }, []);
 
   const db = initializeFirestore(app, {experimentalForceLongPolling: true});
 
- 
-  
   const salvar = () => {
-    const pesquisaRef = doc(db, "pesquisas", id);
+    const pesquisaRef = doc(db, 'pesquisas', id);
     updateDoc(pesquisaRef, {
-	    nome: nome,
-	    data: data,
-	    imagem: imagem
+      nome: nome,
+      data: data,
+      imagem: imagem,
     });
     irHome();
-  }
+  };
 
-// Abre opções: câmera ou galeriaAdd commentMore actions
+  // Abre opções: câmera ou galeriaAdd commentMore actions
   const escolherImagem = () => {
     Alert.alert('Selecionar imagem', 'Escolha a fonte da imagem:', [
       {
         text: 'Câmera',
         onPress: () => {
-          launchCamera({ mediaType: 'photo', quality: 1 }, response => {
+          launchCamera({mediaType: 'photo', quality: 1}, response => {
             if (!response.didCancel && !response.errorCode) {
               setImagem(response.assets[0].uri);
             }
@@ -67,7 +79,7 @@ const ModificarPesquisa = (props) => {
       {
         text: 'Galeria',
         onPress: () => {
-          launchImageLibrary({ mediaType: 'photo', quality: 1 }, response => {
+          launchImageLibrary({mediaType: 'photo', quality: 1}, response => {
             if (!response.didCancel && !response.errorCode) {
               setImagem(response.assets[0].uri);
             }
@@ -81,7 +93,7 @@ const ModificarPesquisa = (props) => {
     ]);
   };
 
-//Navegacao
+  //Navegacao
   const irHome = () => {
     props.navigation.navigate('Drawer');
   };
@@ -91,9 +103,9 @@ const ModificarPesquisa = (props) => {
   };
 
   const confirmarApagar = () => {
-    deleteDoc(doc(db, "pesquisas", id));
+    deleteDoc(doc(db, 'pesquisas', id));
     irHome();
-  }
+  };
 
   const cancelarApagar = () => {
     setMostrarModal(false);
@@ -101,7 +113,9 @@ const ModificarPesquisa = (props) => {
 
   return (
     <PaperProvider theme={theme}>
-      <ScrollView contentContainerStyle={estilos.container} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        contentContainerStyle={estilos.container}
+        keyboardShouldPersistTaps="handled">
         <Text style={estilos.label}>Nome</Text>
         <TextInput
           style={estilos.input}
@@ -113,7 +127,7 @@ const ModificarPesquisa = (props) => {
         <Text style={estilos.label}>Data</Text>
         <View style={estilos.inputComIcone}>
           <TextInput
-            style={[estilos.input, { flex: 1 }]}
+            style={[estilos.input, {flex: 1}]}
             value={data}
             placeholder="16/02/2024"
             onChangeText={setData}
@@ -124,14 +138,17 @@ const ModificarPesquisa = (props) => {
         <Text style={estilos.label}>Imagem</Text>
         <TouchableOpacity onPress={escolherImagem} style={estilos.caixaImagem}>
           {imagem ? (
-            <Image source={{ uri: imagem }} style={{ width: 100, height: 100, borderRadius: 10 }} />
+            <Image
+              source={{uri: imagem}}
+              style={{width: 100, height: 100, borderRadius: 10}}
+            />
           ) : (
             <Icon name="camera-plus" size={50} color="#D400FF" />
           )}
         </TouchableOpacity>
 
         <View style={estilos.cBotao}>
-          <Botao texto={'SALVAR'} funcao={salvar}/>
+          <Botao texto={'SALVAR'} funcao={salvar} />
         </View>
 
         <TouchableOpacity style={estilos.apagar} onPress={apagar}>
@@ -145,16 +162,21 @@ const ModificarPesquisa = (props) => {
         animationType="fade"
         transparent={true}
         visible={mostrarModal}
-        onRequestClose={cancelarApagar}
-      >
+        onRequestClose={cancelarApagar}>
         <View style={estilos.modalFundo}>
           <View style={estilos.modalContainer}>
-            <Text style={estilos.modalTexto}>Tem certeza de apagar essa pesquisa?</Text>
+            <Text style={estilos.modalTexto}>
+              Tem certeza de apagar essa pesquisa?
+            </Text>
             <View style={estilos.modalBotoes}>
-              <TouchableOpacity style={estilos.botaoSim} onPress={confirmarApagar}>
+              <TouchableOpacity
+                style={estilos.botaoSim}
+                onPress={confirmarApagar}>
                 <Text style={estilos.textoBotaoModal}>SIM</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={estilos.botaoCancelar} onPress={cancelarApagar}>
+              <TouchableOpacity
+                style={estilos.botaoCancelar}
+                onPress={cancelarApagar}>
                 <Text style={estilos.textoBotaoModal}>CANCELAR</Text>
               </TouchableOpacity>
             </View>
@@ -169,13 +191,13 @@ const estilos = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#372775',
-    padding: 20
+    padding: 20,
   },
   label: {
     fontSize: 15,
     color: '#FFFFFF',
     marginTop: 10,
-    fontFamily: 'AveriaLibre-Regular'
+    fontFamily: 'AveriaLibre-Regular',
   },
   input: {
     fontSize: 15,
@@ -184,14 +206,14 @@ const estilos = StyleSheet.create({
     marginTop: 5,
     marginBottom: 10,
     borderRadius: 5,
-    fontFamily: 'AveriaLibre-Regular'
+    fontFamily: 'AveriaLibre-Regular',
   },
   inputComIcone: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
     borderRadius: 5,
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
   },
   caixaImagem: {
     backgroundColor: '#FFFFFF',
@@ -200,7 +222,7 @@ const estilos = StyleSheet.create({
     height: 120,
     marginTop: 5,
     marginBottom: 20,
-    borderRadius: 10
+    borderRadius: 10,
   },
   cBotao: {
     flex: 1,
@@ -210,38 +232,38 @@ const estilos = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    marginTop: 20
+    marginTop: 20,
   },
   txtApagar: {
     color: '#FFFFFF',
     fontSize: 14,
     marginLeft: 5,
-    fontFamily: 'AveriaLibre-Regular'
+    fontFamily: 'AveriaLibre-Regular',
   },
   modalFundo: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)'
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContainer: {
     backgroundColor: '#2B1F5C',
     padding: 20,
     borderRadius: 10,
     alignItems: 'center',
-    width: '80%'
+    width: '80%',
   },
   modalTexto: {
     color: '#FFFFFF',
     fontSize: 18,
     textAlign: 'center',
     marginBottom: 20,
-    fontFamily: 'AveriaLibre-Regular'
+    fontFamily: 'AveriaLibre-Regular',
   },
   modalBotoes: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '100%'
+    width: '100%',
   },
   botaoSim: {
     backgroundColor: '#FF8A80',
@@ -249,7 +271,7 @@ const estilos = StyleSheet.create({
     borderRadius: 5,
     flex: 1,
     marginRight: 10,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   botaoCancelar: {
     backgroundColor: '#42A5F5',
@@ -257,13 +279,13 @@ const estilos = StyleSheet.create({
     borderRadius: 5,
     flex: 1,
     marginLeft: 10,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   textoBotaoModal: {
     color: '#FFFFFF',
     fontSize: 14,
-    fontFamily: 'AveriaLibre-Regular'
-  }
+    fontFamily: 'AveriaLibre-Regular',
+  },
 });
 
 export default ModificarPesquisa;
